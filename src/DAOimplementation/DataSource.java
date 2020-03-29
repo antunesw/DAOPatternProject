@@ -7,24 +7,18 @@ public class DataSource {
 
     private String db = "jdbc:mysql://apontejaj.com:3306/customer";
     private String un = "cctstudent";
-    private String pw = "pass1234!";
+    private String pw = "Pass1234!";
+
+    private Connection conn;
+    private Statement stmt;
+    private ResultSet rs = null;
 
     public DataSource() {
 
         try {
-            Connection conn = DriverManager.getConnection(db, un, pw);
+            conn = DriverManager.getConnection(db, un, pw);
 
-            Statement stmt = conn.createStatement();
-
-            ResultSet rs = stmt.executeQuery("SELECT * FROM customer");
-
-            while (rs.next())
-
-                System.out.println(rs.getString(1) + "\t" + rs.getString(2) + "\t" + rs.getString(3));
-
-            rs.close();
-            stmt.close();
-            conn.close();
+            stmt = conn.createStatement();
 
 
         } catch (SQLException se) {
@@ -38,6 +32,64 @@ public class DataSource {
                 se = se.getNextException();
             }
 
+        }
+
+    }
+
+    /**
+     *Executes query and saves it into the database
+     * @param query
+     * @return
+     */
+    public boolean saveData(String query){
+
+
+        //Executes the Query
+        try {
+            stmt.execute(query);
+            return true;
+            //loop through the Result set
+//                while (rs.next())
+//System.out.println(rs.getString(1) + "\t" + rs.getString(2) + "\t" + rs.getString(3));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     *receives data and returns resultSet
+     * @param query
+     * @return
+     */
+    public ResultSet select(String query) {
+
+
+        //Executes the Query
+        try {
+            rs = stmt.executeQuery(query);
+
+            //loop through the Result set
+//                while (rs.next())
+//System.out.println(rs.getString(1) + "\t" + rs.getString(2) + "\t" + rs.getString(3));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return rs;
+    }
+
+    /**
+     * close connection when it's called
+     */
+    public void closeConnection() {
+        try {
+            rs.close();
+            stmt.close();
+            conn.close();
+        }catch (SQLException e){
+            e.fillInStackTrace();
         }
 
     }
